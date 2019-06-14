@@ -1,0 +1,33 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package fr.positif.backend.services.actions.auth;
+
+import fr.positif.backend.AbstractAction;
+import java.util.ArrayList;
+import java.util.Arrays;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+/**
+ *
+ * @author bfrolin
+ */
+public class GetCurrentUserAction extends AbstractAction {
+
+    @Override
+    protected ArrayList<String> permissionsRequired() {
+        String[] permissions = {"Client", "Employee"};
+        return new ArrayList(Arrays.asList(permissions));
+    }
+
+    @Override
+    public boolean execute(HttpServletRequest request) {                
+        HttpSession session = request.getSession();
+        request.setAttribute("user", session.getAttribute("user"));
+
+        return true;
+    }
+}

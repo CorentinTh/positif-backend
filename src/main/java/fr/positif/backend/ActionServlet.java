@@ -5,6 +5,22 @@ package fr.positif.backend;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+import fr.positif.backend.services.actions.GetClientAction;
+import fr.positif.backend.services.actions.GetMediumAction;
+import fr.positif.backend.services.actions.auth.GetCurrentUserAction;
+import fr.positif.backend.services.actions.list.ListClientsAction;
+import fr.positif.backend.services.serializers.list.ListClientsSerializer;
+import fr.positif.backend.services.serializers.auth.RegisterSerializer;
+import fr.positif.backend.services.serializers.auth.LogoutSerializer;
+import fr.positif.backend.services.actions.auth.LogoutAction;
+import fr.positif.backend.services.actions.auth.RegisterAction;
+import fr.positif.backend.services.actions.auth.LoginAction;
+import fr.positif.backend.services.serializers.auth.LoginSerializer;
+import fr.positif.backend.services.actions.list.ListMediumsAction;
+import fr.positif.backend.services.serializers.GetClientSerializer;
+import fr.positif.backend.services.serializers.GetMediumSerializer;
+import fr.positif.backend.services.serializers.auth.GetCurrentUserSerializer;
+import fr.positif.backend.services.serializers.list.ListMediumsSerializer;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -14,13 +30,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import fr.positif.dao.JpaUtil;
-import fr.positif.services.ServicesInit;
-import services.login.LoginAction;
-import services.login.LoginSerializer;
-import services.logout.LogoutAction;
-import services.logout.LogoutSerializer;
-import services.register.RegisterAction;
-import services.register.RegisterSerializer;
 
 /**
  *
@@ -34,9 +43,6 @@ public class ActionServlet extends HttpServlet {
         super.init();
         
         JpaUtil.init();
-
-        ServicesInit.insertEmployees();
-        ServicesInit.insertMediums();
     }
 
     @Override
@@ -84,20 +90,38 @@ public class ActionServlet extends HttpServlet {
                 break;
 
             case "getCurrentUser": // user in session
-                action = new RegisterAction();
-                serializer = new RegisterSerializer();
+                action = new GetCurrentUserAction();
+                serializer = new GetCurrentUserSerializer();
                 break;
 
             case "listMediums":
+                action = new ListMediumsAction();
+                serializer = new ListMediumsSerializer();
                 break;
 
             case "getMedium": // Attribute : id
+                action = new GetMediumAction();
+                serializer = new GetMediumSerializer();
                 break;
 
             case "listClients":
+                action = new ListClientsAction();
+                serializer = new ListClientsSerializer();
                 break;
 
-            case "getClient":
+            case "getClient":  // Attribute : id
+                action = new GetClientAction();
+                serializer = new GetClientSerializer();
+                break;
+                
+            case "listConsultations":  // Attribute : id person
+                action = new GetClientAction();
+                serializer = new GetClientSerializer();
+                break;
+                
+            case "listCurrentConsultations":
+                action = new GetClientAction();
+                serializer = new GetClientSerializer();
                 break;
 
             default:
@@ -112,7 +136,7 @@ public class ActionServlet extends HttpServlet {
 
         if (!action.isAuthorized(session.getAttribute("userPermission").toString())) {
             System.out.println(session.getAttribute("userPermission").toString());
-            response.sendError(401, "Unauthorized" + session.getAttribute("userPermission").toString());
+            response.sendError(401, "Unauthorized " + session.getAttribute("userPermission").toString());
             return;
         }
 
