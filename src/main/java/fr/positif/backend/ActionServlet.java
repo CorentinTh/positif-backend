@@ -5,21 +5,38 @@ package fr.positif.backend;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+import fr.positif.backend.services.actions.AcceptConsultationAction;
+import fr.positif.backend.services.actions.AskForConsultationAction;
+import fr.positif.backend.services.actions.CloseConsultationAction;
+import fr.positif.backend.services.actions.GeneratePredictionsAction;
 import fr.positif.backend.services.actions.GetClientAction;
+import fr.positif.backend.services.actions.GetClientsCountByEmployeeAction;
+import fr.positif.backend.services.actions.GetConsultationAction;
+import fr.positif.backend.services.actions.GetConsultationsCountPerDayAction;
+import fr.positif.backend.services.actions.GetConsultationsCountPerStatusAction;
+import fr.positif.backend.services.actions.GetCurrentConsultationAction;
 import fr.positif.backend.services.actions.GetMediumAction;
 import fr.positif.backend.services.actions.auth.GetCurrentUserAction;
 import fr.positif.backend.services.actions.list.ListClientsAction;
 import fr.positif.backend.services.serializers.list.ListClientsSerializer;
-import fr.positif.backend.services.serializers.auth.RegisterSerializer;
 import fr.positif.backend.services.serializers.auth.LogoutSerializer;
 import fr.positif.backend.services.actions.auth.LogoutAction;
 import fr.positif.backend.services.actions.auth.RegisterAction;
 import fr.positif.backend.services.actions.auth.LoginAction;
+import fr.positif.backend.services.actions.list.ListConsultationsAction;
+import fr.positif.backend.services.actions.list.ListCurrentUserConsultationsAction;
 import fr.positif.backend.services.serializers.auth.LoginSerializer;
 import fr.positif.backend.services.actions.list.ListMediumsAction;
+import fr.positif.backend.services.serializers.GeneratePredictionsSerializer;
 import fr.positif.backend.services.serializers.GetClientSerializer;
+import fr.positif.backend.services.serializers.GetConsultationsCountPerDaySerializer;
+import fr.positif.backend.services.serializers.GetConsultationSerializer;
 import fr.positif.backend.services.serializers.GetMediumSerializer;
+import fr.positif.backend.services.serializers.GetClientsCountByEmployeeSerializer;
+import fr.positif.backend.services.serializers.GetConsultationsCountPerStatusSerializer;
+import fr.positif.backend.services.serializers.SimpleStatusSerializer;
 import fr.positif.backend.services.serializers.auth.GetCurrentUserSerializer;
+import fr.positif.backend.services.serializers.list.ListConsultationsSerializer;
 import fr.positif.backend.services.serializers.list.ListMediumsSerializer;
 import java.io.IOException;
 import javax.servlet.ServletException;
@@ -48,7 +65,6 @@ public class ActionServlet extends HttpServlet {
     @Override
     public void destroy() {
         super.destroy();
-        
         JpaUtil.destroy();
     }
     /**
@@ -71,8 +87,8 @@ public class ActionServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         String doParam = request.getParameter("do");
 
-        AbstractSerializer serializer = null;
-        AbstractAction action = null;
+        AbstractSerializer serializer;
+        AbstractAction action;
         switch (doParam) {
             case "login":
                 action = new LoginAction();
@@ -86,7 +102,7 @@ public class ActionServlet extends HttpServlet {
                 
             case "register":
                 action = new RegisterAction();
-                serializer = new RegisterSerializer();
+                serializer = new SimpleStatusSerializer();
                 break;
 
             case "getCurrentUser": // user in session
@@ -115,15 +131,65 @@ public class ActionServlet extends HttpServlet {
                 break;
                 
             case "listConsultations":  // Attribute : id person
-                action = new GetClientAction();
-                serializer = new GetClientSerializer();
+                action = new ListConsultationsAction();
+                serializer = new ListConsultationsSerializer();
+                break;
+                
+            case "listCurrentUserConsultations":
+                action = new ListCurrentUserConsultationsAction();
+                serializer = new ListConsultationsSerializer();
+                break;
+            
+            case "getConsultation":
+                action = new GetConsultationAction();
+                serializer = new GetConsultationSerializer();
                 break;
                 
             case "listCurrentConsultations":
                 action = new GetClientAction();
                 serializer = new GetClientSerializer();
                 break;
+                
+            case "askForConsultation":
+                action = new AskForConsultationAction();
+                serializer = new SimpleStatusSerializer();
+                break;
 
+            case "getCurrentConsultation":
+                action = new GetCurrentConsultationAction();
+                serializer = new GetConsultationSerializer();
+                break;
+                
+            case "acceptConsultation":
+                action = new AcceptConsultationAction();
+                serializer = new SimpleStatusSerializer();
+                break;
+                
+            case "generatePredictions":
+                action = new GeneratePredictionsAction();
+                serializer = new GeneratePredictionsSerializer();
+                break;
+                
+            case "closeConsultation":
+                action = new CloseConsultationAction();
+                serializer = new SimpleStatusSerializer();
+                break;
+                
+            case "getClientsCountByEmployee":
+                action = new GetClientsCountByEmployeeAction();
+                serializer = new GetClientsCountByEmployeeSerializer();
+                break;
+                
+            case "getConsultationsCountPerDay":
+                action = new GetConsultationsCountPerDayAction();
+                serializer = new GetConsultationsCountPerDaySerializer();
+                break;
+                
+            case "getConsultationsCountByStatus":
+                action = new GetConsultationsCountPerStatusAction();
+                serializer = new GetConsultationsCountPerStatusSerializer();
+                break;
+                
             default:
                 response.sendError(404, "Request Not Found");
                 return;
@@ -135,7 +201,6 @@ public class ActionServlet extends HttpServlet {
         }
 
         if (!action.isAuthorized(session.getAttribute("userPermission").toString())) {
-            System.out.println(session.getAttribute("userPermission").toString());
             response.sendError(401, "Unauthorized " + session.getAttribute("userPermission").toString());
             return;
         }

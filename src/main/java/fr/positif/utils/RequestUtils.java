@@ -42,6 +42,24 @@ public class RequestUtils {
         }
         catch (NumberFormatException e)
         {
+            e.printStackTrace();
+            return null;
+        }
+        
+        return id;
+    }
+    
+    public static Integer getIntFromRequest(final HttpServletRequest request, final String name)
+    {
+        Integer id;
+        
+        try 
+        {
+            id = Integer.parseInt(request.getParameter(name));
+        }
+        catch (NumberFormatException e)
+        {
+            e.printStackTrace();
             return null;
         }
         
