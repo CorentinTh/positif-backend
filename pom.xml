@@ -16,7 +16,13 @@
     
     <dependencies>
         <dependency>
-            <groupId>com.3IFA.B03</groupId>
+            <groupId>fr.positif</groupId>
+            <artifactId>positif</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>fr.positif</groupId>
             <artifactId>positif</artifactId>
             <version>1.0-SNAPSHOT</version>
             <type>jar</type>

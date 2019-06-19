@@ -25,6 +25,7 @@ public class MediumSerializer implements JsonSerializer<Medium> {
         jsonMedium.addProperty("name", medium.getName());
         jsonMedium.addProperty("picturePath", medium.getPicturePath());
         jsonMedium.addProperty("talent", medium.getTalent().name());
+        jsonMedium.addProperty("description", medium.getDescription());
         jsonMedium.addProperty("speciality", medium.getSpeciality());
         jsonMedium.addProperty("training", medium.getTrainig());
         jsonMedium.addProperty("schoolYear", medium.getSchoolYear());

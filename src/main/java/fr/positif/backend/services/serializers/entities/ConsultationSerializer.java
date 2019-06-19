@@ -18,7 +18,10 @@ import fr.positif.entities.Employee;
 import fr.positif.entities.Medium;
 import fr.positif.entities.Prediction;
 import java.lang.reflect.Type;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.TimeZone;
 /**
  *
  * @author bfrolin
@@ -29,7 +32,10 @@ public class ConsultationSerializer implements JsonSerializer<Consultation> {
     public JsonElement serialize(Consultation consultation, Type type, JsonSerializationContext jsc) 
     {
         JsonObject jsonConsultation = new JsonObject();
-        
+        TimeZone tz = TimeZone.getTimeZone("UTC");
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'"); // Quoted "Z" to indicate UTC, no timezone offset
+        df.setTimeZone(tz);
+
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(Employee.class, new EmployeeSerializer());
         gsonBuilder.registerTypeAdapter(Medium.class, new MediumSerializer());
@@ -49,8 +55,9 @@ public class ConsultationSerializer implements JsonSerializer<Consultation> {
       
         jsonConsultation.addProperty("comment", consultation.getComment());
         
-        jsonConsultation.addProperty("createdAt", (consultation.getCreatedAt() != null) ? consultation.getCreatedAt().toString() : "null");
-        jsonConsultation.addProperty("closedAt", (consultation.getClosedAt()!= null) ? consultation.getClosedAt().toString() : "null");        
+        jsonConsultation.addProperty("createdAt", (consultation.getCreatedAt() != null) ? df.format(consultation.getCreatedAt()) : "null"); 
+        jsonConsultation.addProperty("answeredAt", (consultation.getAnsweredAt() != null) ? df.format(consultation.getAnsweredAt()) : "null");
+        jsonConsultation.addProperty("closedAt", (consultation.getClosedAt()!= null) ? df.format(consultation.getClosedAt()) : "null");        
         
         jsonConsultation.add("employee", gson.toJsonTree(consultation.getEmployee()));
         jsonConsultation.add("client", gson.toJsonTree(consultation.getClient()));

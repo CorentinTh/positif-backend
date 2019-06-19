@@ -12,6 +12,9 @@ import com.google.gson.JsonSerializer;
 import fr.positif.entities.Employee;
 import fr.positif.entities.Person;
 import java.lang.reflect.Type;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.TimeZone;
 /**
  *
  * @author bfrolin
@@ -22,13 +25,16 @@ public class PersonSerializer implements JsonSerializer<Person> {
     public JsonElement serialize(Person person, Type type, JsonSerializationContext jsc) 
     {
         JsonObject jsonUser = new JsonObject();
+        TimeZone tz = TimeZone.getTimeZone("UTC");
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'"); // Quoted "Z" to indicate UTC, no timezone offset
+        df.setTimeZone(tz);
         
         jsonUser.addProperty("id", person.getId());
         jsonUser.addProperty("firstname", person.getFirstname());
         jsonUser.addProperty("lastname", person.getLastname());
         jsonUser.addProperty("gender", person.getGender());
         jsonUser.addProperty("email", person.getEmail());
-        jsonUser.addProperty("birthDate", person.getBirthDate().toString());
+        jsonUser.addProperty("birthDate", df.format(person.getBirthDate()));
         jsonUser.addProperty("role", (person instanceof Employee) ? "Employee" : "Client");
                 
         return jsonUser;

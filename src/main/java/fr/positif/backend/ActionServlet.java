@@ -47,6 +47,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import fr.positif.dao.JpaUtil;
+import fr.positif.services.ServicesInit;
 
 /**
  *
@@ -60,6 +61,9 @@ public class ActionServlet extends HttpServlet {
         super.init();
         
         JpaUtil.init();
+        
+        //ServicesInit.insertMediums();
+        //ServicesInit.insertEmployees();
     }
 
     @Override
@@ -79,6 +83,12 @@ public class ActionServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException 
     {
+        response.setHeader("Access-Control-Allow-Origin", "http://localhost:4200");
+        response.setHeader("Access-Control-Allow-Headers", "origin, content-type, accept, authorization");
+        response.setHeader("Access-Control-Allow-Credentials", "true");
+        response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD");
+        response.setHeader("Access-Control-Max-Age", "1209600");
+        
         HttpSession session = request.getSession();
         if (session.getAttribute("userPermission") == null) {
             session.setAttribute("userPermission", "none");
@@ -87,6 +97,8 @@ public class ActionServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         String doParam = request.getParameter("do");
 
+        System.out.println("doParam: " + doParam);
+        
         AbstractSerializer serializer;
         AbstractAction action;
         switch (doParam) {

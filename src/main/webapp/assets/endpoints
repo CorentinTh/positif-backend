@@ -1,0 +1,11 @@
+/users/authenticate
+/users/current
+/users/:id
+
+/clients
+/clients/:id
+/mediums
+/mediums/:id
+
+
+list
